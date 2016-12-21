@@ -21,7 +21,7 @@ interface BoardState {
 }
 
 function randomValue(max: number) {
-  return Math.floor(Math.random() * (max + 1))
+  return Math.floor(Math.random() * max)
 }
 
 export default class Board extends Component<BoardProps, BoardState> {
@@ -107,9 +107,6 @@ export default class Board extends Component<BoardProps, BoardState> {
             ...cells.slice(i1 + 1)
           ]
         })
-        /*this.setState({
-          cell1: index
-        })*/
       } else {
         this.setState({
           cell0: index,
@@ -130,9 +127,7 @@ export default class Board extends Component<BoardProps, BoardState> {
           if (cell)
             return <div
               onClick={() => this.selectCell(i, j)}
-              className={`cell cell-${cell.value}${selected ? ' selected' : ''}`}>
-              {cell.i}:{cell.j} = {cell.value}
-            </div>
+              className={`cell cell-${cell.value}${selected ? ' selected' : ''}`} />
         })}
       </div>)}
     </div>
