@@ -1,0 +1,23 @@
+{
+  "name": "preact-match-3-game",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "serve": "node config/serve.js",
+    "build": "node config/build.js",
+    "deploy": "surge -p ./ -d preact-match-3-game.surge.sh"
+  },
+  "dependencies": {
+    "preact": "^7.1.0"
+  },
+  "devDependencies": {
+    "object-assign": "^4.1.0",
+    "promise": "^7.1.1",
+    "react-dev-utils": "^0.4.2",
+    "ts-loader": "^1.3.3",
+    "typescript": "^2.1.4",
+    "webpack": "^1.14.0",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
