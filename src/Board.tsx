@@ -7,6 +7,7 @@ interface BoardProps {
   width: number
   height: number
   values: number
+  onCount?: (value: number) => any
 }
 
 interface Cell {
@@ -22,6 +23,7 @@ interface BoardState {
   cells?: Cell[]
   cell0?: number
   cell1?: number
+  count?: number
 }
 
 function randomValue(max: number) {
@@ -35,7 +37,8 @@ export default class Board extends Component<BoardProps, BoardState> {
     this.state = {
       cells: null,
       cell0: -1,
-      cell1: -1
+      cell1: -1,
+      count: 0
     }
   }
 
@@ -98,13 +101,11 @@ export default class Board extends Component<BoardProps, BoardState> {
 
   selectCell(i: number, j: number) {
     const index = this.getIndex(i, j)
-    const {cells, cell0, cell1} = this.state
-    const cell = cells[index]
+    const {cells, cell0} = this.state
 
-    //this.findLine(i, j)
-    //console.log('end')
-
-    if (!debug) {
+    if (debug) {
+      this.fillDown(i, j)
+    } else {
       // if none selected
       if (cell0 === -1) {
         this.setState({
@@ -131,6 +132,7 @@ export default class Board extends Component<BoardProps, BoardState> {
           if (cellItem0.value !== cellItem1.value) {
             this.swap(i0, i1)
             if (!this.findLine(i, j) && !this.findLine(coords0.i, coords0.j)) {
+              // if there is no lines swap back and reset
               this.swap(i0, i1)
               this.setState({
                 cell0: -1,
@@ -154,24 +156,39 @@ export default class Board extends Component<BoardProps, BoardState> {
     }
   }
 
-  fillDown(i: number, j: number, count: number = 1) {
-
-  }
-
-  markToDelete(i: number, j: number, del: boolean) {
+  fillDown(i: number, j: number) {
     const {cells} = this.state
-    const index = this.getIndex(i, j)
-    const cell = cells[this.getIndex(i, j)]
+    let cells1 = [...cells]
+    if (i > 0) {
+      for (let k = i; k > 0; k--) {
+        const index0 = this.getIndex(k - 1, j)
+        const index1 = this.getIndex(k, j)
+        const cell0 = cells[index0]
+        const cell1 = cells[index1]
+        cells1 = [
+          ...cells1.slice(0, index1),
+          {
+            ...cell1,
+            value: cell0.value,
+            delete: false
+          },
+          ...cells1.slice(index1 + 1)
+        ]
+      }
+    }
+    const indexLast = this.getIndex(0, j)
+    cells1 = [
+      ...cells1.slice(0, indexLast),
+      {
+        ...cells1[indexLast],
+        value: randomValue(this.props.values),
+        delete: false
+      },
+      ...cells1.slice(indexLast + 1)
+    ]
 
     this.setState({
-      cells: [
-        ...cells.slice(0, index),
-        {
-          ...cell,
-          delete: del
-        },
-        ...cells.slice(index + 1),
-      ]
+      cells: cells1
     })
   }
 
@@ -233,16 +250,25 @@ export default class Board extends Component<BoardProps, BoardState> {
     let result = false
 
     if (vertical.length >= 3) {
-      vertical.map(c => this.markToDelete(c[0], c[1], true))
+      this.addCount(vertical.length * 100)
+      vertical.map(c => this.fillDown(c[0], c[1]))
       result = true
     }
 
     if (horizontal.length >= 3) {
-      horizontal.map(c => this.markToDelete(c[0], c[1], true))
+      this.addCount(horizontal.length * 100)
+      horizontal.map(c => this.fillDown(c[0], c[1]))
       result = true
     }
 
     return result
+  }
+
+  addCount(count) {
+    this.props.onCount && this.props.onCount(this.state.count + count)
+    this.setState({
+      count: this.state.count + count
+    })
   }
 
   findLines() {
