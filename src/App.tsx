@@ -10,7 +10,7 @@ class App extends Component<any, {
       count: 0
     }
   }
-  
+
   render() {
     return <div>
       <div className='count'>count: {this.state.count}</div>
@@ -18,7 +18,7 @@ class App extends Component<any, {
         <Board
           height={6}
           width={6}
-          values={4}
+          values={6}
           onCount={count => this.setState({ count })} />
       </div>
     </div>
